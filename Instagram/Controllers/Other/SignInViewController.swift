@@ -149,8 +149,16 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     @objc func didTapCreateAccount(){
         let vc = SignUpViewController()
+        vc.completion = {[weak self] in
+            DispatchQueue.main.async {
+                let tabVC = TabBarViewController()
+                tabVC.modalPresentationStyle = .fullScreen
+                self?.present(tabVC,animated: true)
+            }
+        }
         
         // use navigationController to display SignUpViewController when clicking on the button
+        // so we go from Sign-in View to Sign-up View
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -174,7 +182,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             passwordField.becomeFirstResponder()
         }else{
             textField.resignFirstResponder()
-            didTapSignIn()
+            didTapSignIn() // run didTapSignIn() func when hitting return button
         }
         return true
     }
