@@ -214,10 +214,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
                                    profilePicture: data) {[weak self] (result) in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let user):
+                case .success(let user):// user này là object User, cái này từ completion(.success(newUser)) của Authmanager(đoán vậy)
+                    
+                    // store data to system
                     UserDefaults.standard.setValue(user.email, forKey: "email")
                     UserDefaults.standard.setValue(user.username, forKey: "username")
                     
+                    // if success, go back to root VC and run completion() block
                     self?.navigationController?.popToRootViewController(animated: true)
                     self?.completion?() // present main application user interface
                 case .failure(let error):

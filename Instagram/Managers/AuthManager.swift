@@ -71,6 +71,13 @@ final class AuthMangager {
     
 //MARK: - func to sign out
     public func signOut(completion: @escaping (Bool) -> Void){
+        do{
+            try auth.signOut()
+            completion(true)
+        }catch{
+            print(error)
+            completion(false)
+        }
         
     }
     
