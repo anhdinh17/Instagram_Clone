@@ -145,6 +145,21 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
               password.count >= 6 else {
             return
         }
+        
+        // SIGN IN with AUTHMANAGER
+        AuthMangager.shared.signIn(email: email, password: password) { [weak self] (result) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success: // sign in success thì: 
+                    let vc = TabBarViewController()
+                    vc.modalPresentationStyle = .fullScreen
+                    self?.present(vc, animated: true, completion: nil)
+                    
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }
     }
     
     @objc func didTapCreateAccount(){

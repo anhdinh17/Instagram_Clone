@@ -18,6 +18,7 @@ final class AuthMangager {
     
     enum AuthError: Error {
         case newUserCreation
+        case signInFailed
     }
     
     public var isSignedIn: Bool {
@@ -29,7 +30,26 @@ final class AuthMangager {
     public func signIn(email: String,
                        password: String,
                        completion: @escaping (Result<User, Error>) -> Void){
+        DatabaseManager.shared.findUser(with: email) { [weak self] (user) in
+            guard let user = user else{
+                completion(.failure(AuthError.signInFailed))
+                return
+            }
+            
+            self?.auth.signIn(withEmail: email, password: password) { (result, error) in
+                guard result != nil, error == nil else {
+                    completion(.failure(AuthError.signInFailed))
+                    return
+                }
+                // save to system
+                UserDefaults.standard.setValue(user.username, forKey: "username")
+                UserDefaults.standard.setValue(user.email, forKey: "email")
+                
+                // run completion block success with user
+                completion(.success(user))
+        }
         
+        }
     }
 
 //MARK: - func to sign up
