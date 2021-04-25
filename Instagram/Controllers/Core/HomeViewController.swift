@@ -10,6 +10,8 @@ import UIKit
 class HomeViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
     private var collectionView: UICollectionView?
+    
+    private var viewModels = [[HomeFeedCellType]]()
 
 //MARK: - Life Cycle
     override func viewDidLoad() {
@@ -18,6 +20,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         view.backgroundColor = .systemBackground
         
         configureCollectionView()
+        
+        fetchPosts()
     }
     
     override func viewDidLayoutSubviews() {
@@ -25,6 +29,76 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         collectionView?.frame = view.bounds
     }
     
+    private func fetchPosts(){
+        // mock data
+        let postData: [HomeFeedCellType] = [
+            .poster(
+                viewModel: PosterCollectionViewCellViewModel(
+                    username: "iosacademy",
+                    profilePictureURL: URL(string: "https://www.apple.com")!)),
+            .post(viewModel: PostCollectionViewCellViewModel(postUrl: URL(string: "https://www.apple.com")!)),
+            .actions(viewModel: PostActionsCollectionViewCellViewModel(isLiked: true)),
+            .likeCount(viewModel: PostLikesCollectionViewCellViewModel(likers: ["kanyewest"])),
+            .caption(viewModel: PostCaptionCollectionViewCellViewModel(username: "iosacademy", caption: "This is an awsome first post!")),
+            .timestamp(viewModel: PostDatetimeCollectionViewCellViewModel(date: Date()))
+        ]
+        
+        // add to arry viewModels
+        viewModels.append(postData)
+        
+        //reload collectionView
+        collectionView?.reloadData()
+    }
+    
+//MARK: - COllectionView delegate funcs
+    
+    // number of sections
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return viewModels.count
+    }
+    
+    // number of cell in each section
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModels[section].count // number of cells
+    }
+    
+    let colors: [UIColor] = [.red,.green,.blue,.yellow,.systemPink,.orange]
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        // hiểu: cái này là 1 cell trong 1 section và set case cho cell đó based on enum
+        let cellType = viewModels[indexPath.section][indexPath.row]
+        switch cellType {
+        case .poster(let viewModel):
+            break
+        case .post(let viewModel):
+            break
+        case .actions(let viewModel):
+            break
+        case .likeCount(let viewModel):
+            break
+        case .caption(let viewModel):
+            break
+        case .timestamp(let viewModel):
+            break
+        }
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        cell.contentView.backgroundColor = colors[indexPath.row]
+
+        return cell
+    }
+    
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+//        return 1
+//    }
+//
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+//        return 1
+//    }
+}
+
+extension HomeViewController {
     func configureCollectionView(){
         
         // sectionHeight =  total height of the cells
@@ -97,33 +171,4 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         // set this collectionView equal to global collectionView
         self.collectionView = collectionView
     }
-
-//MARK: - COllectionView delegate funcs
-    
-    // number of sections
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 3
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 6 // number of cells
-    }
-    
-    let colors: [UIColor] = [.red,.green,.blue,.yellow,.systemPink,.orange]
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        cell.contentView.backgroundColor = colors[indexPath.row]
-
-        return cell
-    }
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-//        return 1
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-//        return 1
-//    }
 }
-
