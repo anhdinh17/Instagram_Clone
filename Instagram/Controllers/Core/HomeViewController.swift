@@ -35,8 +35,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
             .poster(
                 viewModel: PosterCollectionViewCellViewModel(
                     username: "iosacademy",
-                    profilePictureURL: URL(string: "https://www.apple.com")!)),
-            .post(viewModel: PostCollectionViewCellViewModel(postUrl: URL(string: "https://www.apple.com")!)),
+                    profilePictureURL: URL(string: "https://iosacademy.io/assets/images/brand/icon.jpg")!)),
+            .post(viewModel: PostCollectionViewCellViewModel(postUrl: URL(string: "https://iosacademy.io/assets/images/courses/swiftui.png")!)),
             .actions(viewModel: PostActionsCollectionViewCellViewModel(isLiked: true)),
             .likeCount(viewModel: PostLikesCollectionViewCellViewModel(likers: ["kanyewest"])),
             .caption(viewModel: PostCaptionCollectionViewCellViewModel(username: "iosacademy", caption: "This is an awsome first post!")),
@@ -70,23 +70,69 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         let cellType = viewModels[indexPath.section][indexPath.row]
         switch cellType {
         case .poster(let viewModel):
-            break
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PosterCollectionViewCell.identifier,
+                    for: indexPath) as? PosterCollectionViewCell else {
+                fatalError()
+            }
+            
+            // delegate to tap on username and more button
+            cell.delegate = self
+            
+            cell.configure(with: viewModel) // excute configure() func to pass data to Cell to display UI
+            cell.contentView.backgroundColor = colors[indexPath.row]
+            return cell
         case .post(let viewModel):
-            break
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PostCollectionViewCell.identifier,
+                    for: indexPath) as? PostCollectionViewCell else {
+                fatalError()
+            }
+            cell.delegate = self
+            cell.configure(with: viewModel)
+            cell.contentView.backgroundColor = colors[indexPath.row]
+            return cell
         case .actions(let viewModel):
-            break
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PostActionsCollectionViewCell.identifier,
+                    for: indexPath) as? PostActionsCollectionViewCell else {
+                fatalError()
+            }
+            cell.delegate = self
+            cell.configure(with: viewModel)
+            cell.contentView.backgroundColor = colors[indexPath.row]
+            return cell
         case .likeCount(let viewModel):
-            break
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PostLikesCollectionViewCell.identifier,
+                    for: indexPath) as? PostLikesCollectionViewCell else {
+                fatalError()
+            }
+            cell.delegate = self
+            cell.configure(with: viewModel)
+            cell.contentView.backgroundColor = colors[indexPath.row]
+            return cell
         case .caption(let viewModel):
-            break
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PostCaptionCollectionViewCell.identifier,
+                    for: indexPath) as? PostCaptionCollectionViewCell else {
+                fatalError()
+            }
+            cell.delegate = self
+            cell.configure(with: viewModel)
+            cell.contentView.backgroundColor = colors[indexPath.row]
+            return cell
         case .timestamp(let viewModel):
-            break
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PostDateTimeCollectionViewCell.identifier,
+                    for: indexPath) as? PostDateTimeCollectionViewCell else {
+                fatalError()
+            }
+            cell.configure(with: viewModel)
+            cell.contentView.backgroundColor = colors[indexPath.row]
+            return cell
         }
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        cell.contentView.backgroundColor = colors[indexPath.row]
-
-        return cell
     }
     
 //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -98,6 +144,87 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
 //    }
 }
 
+
+
+
+
+//MARK: - Delegate for tapping username and more button
+extension HomeViewController: PosterCollectionViewCellDelegate {
+    func posterCollectionViewCellDidTapMore(_ cell: PosterCollectionViewCell) {
+        // sheet for options when clicking on more button
+        let sheet = UIAlertController(title: "Post Actions", message: nil, preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        sheet.addAction(UIAlertAction(title: "Share Posts", style: .default, handler: { (_) in
+                
+        }))
+        sheet.addAction(UIAlertAction(title: "Report Post", style: .destructive, handler: { (_) in
+                
+        }))
+        present(sheet,animated: true)
+    }
+    
+    func posterCollectionViewCellDidTapUsername(_ cell: PosterCollectionViewCell) {
+        print("Tapped Username")
+        let vc = ProfileViewController(user: User(username: "Alex Dinh", email: "alexdinh@gmail.com"))
+        navigationController?.pushViewController(vc, animated: true)
+        
+    }
+
+}
+
+//MARK: - Delegate for imageView Double Tap
+extension HomeViewController: PostCollectionViewCellDelegate {
+    func postCollectionViewCellDidLike(_ cell: PostCollectionViewCell) {
+        print("Double Tap")
+    }
+
+}
+
+
+//MARK: - Delegate for postActions:
+extension HomeViewController: PostActionsCollectionViewCellDelegate {
+    
+    func postActionsCollectionViewCellDidTapLike(_ cell: PostActionsCollectionViewCell, isLiked: Bool) {
+      
+    }
+    
+    func postActionsCollectionViewCellDidTapComment(_ cell: PostActionsCollectionViewCell) {
+        
+        // dùng navigationContrller để mở postVC
+        let vc = PostViewController()
+        vc.title = "Post"
+        vc.modalPresentationStyle = .fullScreen
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func postActionsCollectionViewCellDidTapShare(_ cell: PostActionsCollectionViewCell) {
+        
+        // SKILL MỚI: tạo sharing sheet
+        let vc = UIActivityViewController(activityItems: ["Sharing from Instagram"],
+                                          applicationActivities: [])
+        present(vc,animated: true)
+    }
+}
+
+
+//MARK: - Delegate for likeCount
+extension HomeViewController: PostLikesCollectionViewCellDelegate{
+    func postLikesCollectionViewCellDidTapLikeCount(_ cell: PostLikesCollectionViewCell) {
+        let vc = ListViewController()
+        vc.title = "Liked by"
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+
+//MARK: - Delegate for Caption
+extension HomeViewController: PostCaptionCollectionViewCellDelegate {
+    func postCaptionCollectionViewCellDidTapCaption(_ cell: PostCaptionCollectionViewCell) {
+        print("Did tap caption")
+    }
+}
+
+//MARK: - configure for collectionView
 extension HomeViewController {
     func configureCollectionView(){
         
@@ -166,7 +293,20 @@ extension HomeViewController {
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        
+        // Register all the cells
+        collectionView.register(PosterCollectionViewCell.self,
+                                forCellWithReuseIdentifier: PosterCollectionViewCell.identifier)
+        collectionView.register(PostCollectionViewCell.self,
+                                forCellWithReuseIdentifier: PostCollectionViewCell.identifier)
+        collectionView.register(PostActionsCollectionViewCell.self,
+                                forCellWithReuseIdentifier: PostActionsCollectionViewCell.identifier)
+        collectionView.register(PostLikesCollectionViewCell.self,
+                                forCellWithReuseIdentifier: PostLikesCollectionViewCell.identifier)
+        collectionView.register(PostCaptionCollectionViewCell.self,
+                                forCellWithReuseIdentifier: PostCaptionCollectionViewCell.identifier)
+        collectionView.register(PostDateTimeCollectionViewCell.self,
+                                forCellWithReuseIdentifier: PostDateTimeCollectionViewCell.identifier)
         
         // set this collectionView equal to global collectionView
         self.collectionView = collectionView

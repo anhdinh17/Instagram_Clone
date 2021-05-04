@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6773C4032638E88600344588 /* PosterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6773C4022638E88600344588 /* PosterCollectionViewCell.swift */; };
+		6773C4062638E9FB00344588 /* PostCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6773C4052638E9FB00344588 /* PostCollectionViewCell.swift */; };
+		6773C4092638EA3900344588 /* PostActionsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6773C4082638EA3900344588 /* PostActionsCollectionViewCell.swift */; };
+		6773C40C2638EA7200344588 /* PostLikesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6773C40B2638EA7200344588 /* PostLikesCollectionViewCell.swift */; };
+		6773C40F2638EA8500344588 /* PostCaptionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6773C40E2638EA8500344588 /* PostCaptionCollectionViewCell.swift */; };
+		6773C4122638EAAC00344588 /* PostDateTimeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6773C4112638EAAC00344588 /* PostDateTimeCollectionViewCell.swift */; };
 		67760B76263501410033645E /* PosterCollectionViewCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67760B75263501410033645E /* PosterCollectionViewCellViewModel.swift */; };
 		67760B792635019F0033645E /* PostCollectionViewCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67760B782635019F0033645E /* PostCollectionViewCellViewModel.swift */; };
 		67760B7C263502120033645E /* PostActionsCollectionViewCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67760B7B263502120033645E /* PostActionsCollectionViewCellViewModel.swift */; };
@@ -48,6 +54,12 @@
 
 /* Begin PBXFileReference section */
 		37C74F2F0223706A0920E2B4 /* Pods_Instagram.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Instagram.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6773C4022638E88600344588 /* PosterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterCollectionViewCell.swift; sourceTree = "<group>"; };
+		6773C4052638E9FB00344588 /* PostCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCollectionViewCell.swift; sourceTree = "<group>"; };
+		6773C4082638EA3900344588 /* PostActionsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostActionsCollectionViewCell.swift; sourceTree = "<group>"; };
+		6773C40B2638EA7200344588 /* PostLikesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostLikesCollectionViewCell.swift; sourceTree = "<group>"; };
+		6773C40E2638EA8500344588 /* PostCaptionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCaptionCollectionViewCell.swift; sourceTree = "<group>"; };
+		6773C4112638EAAC00344588 /* PostDateTimeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDateTimeCollectionViewCell.swift; sourceTree = "<group>"; };
 		67760B75263501410033645E /* PosterCollectionViewCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterCollectionViewCellViewModel.swift; sourceTree = "<group>"; };
 		67760B782635019F0033645E /* PostCollectionViewCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCollectionViewCellViewModel.swift; sourceTree = "<group>"; };
 		67760B7B263502120033645E /* PostActionsCollectionViewCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostActionsCollectionViewCellViewModel.swift; sourceTree = "<group>"; };
@@ -110,6 +122,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6773C4012638E85A00344588 /* Home Cells */ = {
+			isa = PBXGroup;
+			children = (
+				6773C4022638E88600344588 /* PosterCollectionViewCell.swift */,
+				6773C4052638E9FB00344588 /* PostCollectionViewCell.swift */,
+				6773C4082638EA3900344588 /* PostActionsCollectionViewCell.swift */,
+				6773C40B2638EA7200344588 /* PostLikesCollectionViewCell.swift */,
+				6773C40E2638EA8500344588 /* PostCaptionCollectionViewCell.swift */,
+				6773C4112638EAAC00344588 /* PostDateTimeCollectionViewCell.swift */,
+			);
+			path = "Home Cells";
+			sourceTree = "<group>";
+		};
 		67831519262504C700542A43 = {
 			isa = PBXGroup;
 			children = (
@@ -154,6 +179,7 @@
 		678315572625243800542A43 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				6773C4012638E85A00344588 /* Home Cells */,
 				67831530262504CA00542A43 /* LaunchScreen.storyboard */,
 				678315D426278C9700542A43 /* SignInHeaderView.swift */,
 				678315DA2627BF0F00542A43 /* IGTextField.swift */,
@@ -360,12 +386,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				678315932625F50300542A43 /* CaptionViewController.swift in Sources */,
+				6773C40F2638EA8500344588 /* PostCaptionCollectionViewCell.swift in Sources */,
+				6773C40C2638EA7200344588 /* PostLikesCollectionViewCell.swift in Sources */,
 				678315882625F46C00542A43 /* TabBarViewController.swift in Sources */,
 				678315A82625F6C800542A43 /* Notification.swift in Sources */,
 				678315B12625F74600542A43 /* StorageManager.swift in Sources */,
 				678315962625F50B00542A43 /* ListViewController.swift in Sources */,
+				6773C4062638E9FB00344588 /* PostCollectionViewCell.swift in Sources */,
 				678315992625F53500542A43 /* PostViewController.swift in Sources */,
 				6783157A2625F39A00542A43 /* ExploreViewController.swift in Sources */,
+				6773C4092638EA3900344588 /* PostActionsCollectionViewCell.swift in Sources */,
 				6783157F2625F3CC00542A43 /* CameraViewController.swift in Sources */,
 				678315B42625F75600542A43 /* AnalyticsManager.swift in Sources */,
 				678315822625F3FA00542A43 /* NotificationViewController.swift in Sources */,
@@ -387,9 +417,11 @@
 				678315AB2625F72E00542A43 /* AuthManager.swift in Sources */,
 				6783158C2625F4C200542A43 /* SignInViewController.swift in Sources */,
 				678315D826278E9F00542A43 /* Extensions.swift in Sources */,
+				6773C4122638EAAC00344588 /* PostDateTimeCollectionViewCell.swift in Sources */,
 				67760B7C263502120033645E /* PostActionsCollectionViewCellViewModel.swift in Sources */,
 				678315852625F40600542A43 /* ProfileViewController.swift in Sources */,
 				678315B72625F76000542A43 /* HapticsManager.swift in Sources */,
+				6773C4032638E88600344588 /* PosterCollectionViewCell.swift in Sources */,
 				67831526262504C700542A43 /* AppDelegate.swift in Sources */,
 				67831528262504C700542A43 /* SceneDelegate.swift in Sources */,
 			);

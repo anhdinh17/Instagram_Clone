@@ -48,6 +48,7 @@ class ProfileViewController: UIViewController {
         let vc = SettingsViewController()
         // pop up new VC with using UINavigationController
         present(UINavigationController(rootViewController: vc), animated: true)
+        //navigationController?.pushViewController(vc, animated: true)
     }
  
 }
