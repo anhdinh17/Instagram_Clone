@@ -53,6 +53,7 @@ class PostActionsCollectionViewCell: UICollectionViewCell {
         
         contentView.backgroundColor = .systemBackground
         contentView.clipsToBounds = true
+        
         // Add subviews
         contentView.addSubview(likeButton)
         contentView.addSubview(commentButton)
@@ -69,11 +70,11 @@ class PostActionsCollectionViewCell: UICollectionViewCell {
         if self.isLiked {
             let image = UIImage(systemName: "suit.heart.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 44))
             likeButton.setImage(image, for: .normal)
-            likeButton.tintColor = .white
+            likeButton.tintColor = .white // heart rỗng
         }else{
             let image = UIImage(systemName: "suit.heart.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 44))
             likeButton.setImage(image, for: .normal)
-            likeButton.tintColor = .systemRed
+            likeButton.tintColor = .systemRed // heart màu đỏ
         }
         
         // khi tap on like button, run delegate func in HomeViewController with parameter is ngược lại của isLiked

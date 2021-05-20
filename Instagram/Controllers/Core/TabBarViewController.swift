@@ -26,6 +26,7 @@ class TabBarViewController: UITabBarController {
         let activity = NotificationViewController()
         let profile = ProfileViewController(user: currentUser)
         
+        // add vc to navigationController
         let nav1 = UINavigationController(rootViewController: home)
         let nav2 = UINavigationController(rootViewController: explore)
         let nav3 = UINavigationController(rootViewController: camera)

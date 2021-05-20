@@ -41,6 +41,7 @@ final class PosterCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.backgroundColor = .darkGray
         button.tintColor = .label
+        // create image to add to button
         let image = UIImage(systemName: "ellipsis",
                             withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))
         button.setImage(image, for: .normal)

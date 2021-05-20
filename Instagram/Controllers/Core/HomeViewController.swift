@@ -29,6 +29,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         collectionView?.frame = view.bounds
     }
     
+    // mocking data
     private func fetchPosts(){
         // mock data
         let postData: [HomeFeedCellType] = [
@@ -43,7 +44,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
             .timestamp(viewModel: PostDatetimeCollectionViewCellViewModel(date: Date()))
         ]
         
-        // add to arry viewModels
+        // add to array viewModels
         viewModels.append(postData)
         
         //reload collectionView
@@ -66,10 +67,11 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        // hiểu: cái này là 1 cell trong 1 section và set case cho cell đó based on enum
+        // hiểu: cái này là 1 cell trong 1 section và set case cho cell đó bởi vì 1 cell là 1 enum của HomeFeedCellType
         let cellType = viewModels[indexPath.section][indexPath.row]
         switch cellType {
         case .poster(let viewModel):
+            // cast cell to customized cell file
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: PosterCollectionViewCell.identifier,
                     for: indexPath) as? PosterCollectionViewCell else {
@@ -192,7 +194,7 @@ extension HomeViewController: PostActionsCollectionViewCellDelegate {
         
         // dùng navigationContrller để mở postVC
         let vc = PostViewController()
-        vc.title = "Post"
+        vc.title = "Post" // set title for new vc
         vc.modalPresentationStyle = .fullScreen
         navigationController?.pushViewController(vc, animated: true)
     }
