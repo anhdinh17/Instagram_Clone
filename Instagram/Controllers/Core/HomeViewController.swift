@@ -31,6 +31,19 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
     
     // mocking data
     private func fetchPosts(){
+        guard let username = UserDefaults.standard.string(forKey: "username") else {return}
+        
+        DatabaseManager.shared.posts(for: username) { (result) in
+            switch result {
+            case .success(let posts):
+                print("\n\n\n\n \(posts)")
+            case .failure(let error):
+                print("Error in DatabaseManager.posts: \(error)")
+            }
+        }
+    }
+    
+    private func createMockData(){
         // mock data
         let postData: [HomeFeedCellType] = [
             .poster(

@@ -15,6 +15,22 @@ final class DatabaseManager {
     
     let database = Firestore.firestore()
     
+    public func posts(for username: String, completion: @escaping (Result<[Post], Error>) -> Void){
+        // query(directory) of the post that we want to read
+        let ref = database.collection("users").document(username).collection("posts")
+        // read the documents inside this query(directory)
+        // cái đống dưới này là 1 array của Post struct trên Storage
+        ref.getDocuments { (snapshot, error) in
+            guard let posts = snapshot?.documents.compactMap({
+                Post(with: $0.data()) // dòng này hiểu là: với mỗi element của array, lấy hết data: caption, id, likers, postedDate
+            }),error == nil else {
+                return
+            }
+  
+            completion(.success(posts)) // return a "posts" array after main task done
+        }
+    }
+    
     public func findUser(with email: String, completion: @escaping (User?) -> Void){
         let ref = database.collection("users") // "users" collection on Firestore Database
         ref.getDocuments { (snapshot, error) in // get all documents within "users"
@@ -37,12 +53,34 @@ final class DatabaseManager {
     
     // Add user to Firebase Database
     public func createUser(newUser: User, completion: @escaping (Bool)->Void){
+        // tạo directory: "users"/username trên firebase Database
         let reference = database.document("users/\(newUser.username)")
+        
         guard let data = newUser.asDictionary() else { // get a dictionary from asDictionary()
             completion(false)
             return
         }
         // set the dictionary [email:username] to Firestore Database under the documents "users"
+        reference.setData(data){error in
+            completion(error == nil)
+        }
+    }
+    
+    // Add a post to Database under existing username
+    public func createPost(newPost: Post, completion: @escaping (Bool)->Void){
+        guard let username = UserDefaults.standard.string(forKey: "username") else {
+            completion(false)
+            return
+        }
+        
+        // tạo 1 directory based on what we already have:
+        // under users/username ( cái mình đã tạo rồi khi tạo account) -> tạo 1 subfile post/ rồi trong đó tạo thêm newPost.id
+        let reference = database.document("users/\(username)/posts/\(newPost.id)")
+        guard let data = newPost.asDictionary() else { // get a dictionary from asDictionary()
+            completion(false)
+            return
+        }
+        
         reference.setData(data){error in
             completion(error == nil)
         }

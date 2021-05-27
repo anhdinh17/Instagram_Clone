@@ -52,6 +52,9 @@ extension Decodable {
 }
 
 extension Encodable {
+    // func return dictionary [String: something]
+    // something ở đây có thể là caption, id, username, email
+    // vậy có nghĩa struct của object phải là dạng <variable>: String để xài đươc thằng asDictionary này
     func asDictionary() -> [String: Any]?{
         guard let data = try? JSONEncoder().encode(self) else {
             return nil

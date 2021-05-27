@@ -178,7 +178,15 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         guard let image = UIImage(data: data) else {
             return
         }
-        let vc = PostEditViewController(image: image)
+        
+        // resized image first rồi mới chuyển để khi filter ko bị ngược rotation
+        guard let resizedImage = image.sd_resizedImage(with: CGSize(width: 640, height: 640),
+                                                       scaleMode: .aspectFill)
+        else{
+            return
+        }
+        // Pass image to PostEditVC
+        let vc = PostEditViewController(image: resizedImage)
         navigationController?.pushViewController(vc, animated: true)
         
     }

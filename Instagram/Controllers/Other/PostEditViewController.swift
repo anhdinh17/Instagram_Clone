@@ -116,7 +116,10 @@ class PostEditViewController: UIViewController {
     }
     
     @objc func didTapNext(){
-        let vc = CaptionViewController(image: image)
+        // get the right image to send to CaptionVC
+        // either it's a unfiltered image or if after we hit filter button, we send the filtered image to CaptionVC
+        guard let current = imageView.image else {return}
+        let vc = CaptionViewController(image: current)
         vc.title = "Add Caption"
         navigationController?.pushViewController(vc, animated: true)
     }
