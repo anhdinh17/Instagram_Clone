@@ -33,38 +33,65 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
     private func fetchPosts(){
         guard let username = UserDefaults.standard.string(forKey: "username") else {return}
         
-        DatabaseManager.shared.posts(for: username) { (result) in
+        DatabaseManager.shared.posts(for: username) { [weak self](result) in
             switch result {
             case .success(let posts):
                 print("\n\n\n\n \(posts)")
+                
+                let group = DispatchGroup()
+                // với mỗi post của thằng array từ FB này
+                posts.forEach { (model) in
+                    group.enter()
+                    self?.createViewModel(model: model,username: username, completion: { (success) in
+                        defer{
+                            group.leave()
+                        }
+                        if !success {
+                            print("Failed to crate view model")
+                        }
+                    })
+                }
+                
+                group.notify(queue: .main) {
+                    self?.collectionView?.reloadData()
+                }
+                
             case .failure(let error):
                 print("Error in DatabaseManager.posts: \(error)")
             }
         }
     }
     
-    private func createMockData(){
-        // mock data
-        let postData: [HomeFeedCellType] = [
-            .poster(
-                viewModel: PosterCollectionViewCellViewModel(
-                    username: "iosacademy",
-                    profilePictureURL: URL(string: "https://iosacademy.io/assets/images/brand/icon.jpg")!)),
-            .post(viewModel: PostCollectionViewCellViewModel(postUrl: URL(string: "https://iosacademy.io/assets/images/courses/swiftui.png")!)),
-            .actions(viewModel: PostActionsCollectionViewCellViewModel(isLiked: true)),
-            .likeCount(viewModel: PostLikesCollectionViewCellViewModel(likers: ["kanyewest"])),
-            .caption(viewModel: PostCaptionCollectionViewCellViewModel(username: "iosacademy", caption: "This is an awsome first post!")),
-            .timestamp(viewModel: PostDatetimeCollectionViewCellViewModel(date: Date()))
-        ]
-        
-        // add to array viewModels
-        viewModels.append(postData)
-        
-        //reload collectionView
-        collectionView?.reloadData()
+    private func createViewModel(model: Post,
+                                 username: String,
+                                 completion: @escaping (Bool)->Void){
+        StorageManager.shared.profilePictureURL(username: username) { [weak self](profilePictureURL) in
+            guard let postUrl = URL(string: model.postUrlString), let profilePictureUrl = profilePictureURL else{
+                return
+            }
+            
+            let postData: [HomeFeedCellType] = [
+                .poster(
+                    viewModel: PosterCollectionViewCellViewModel(
+                        username: username,
+                        profilePictureURL:profilePictureUrl)),
+                .post(viewModel: PostCollectionViewCellViewModel(postUrl: postUrl)),
+                .actions(viewModel: PostActionsCollectionViewCellViewModel(isLiked: false)),
+                .likeCount(viewModel: PostLikesCollectionViewCellViewModel(likers: [])),
+                .caption(viewModel: PostCaptionCollectionViewCellViewModel(
+                            username: username,
+                            caption: model.caption)),
+                .timestamp(viewModel: PostDatetimeCollectionViewCellViewModel(
+                            date: DateFormatter.formatter.date(from: model.postedDate) ?? Date()))
+            ]
+            
+            // add to array viewModels
+            self?.viewModels.append(postData)
+            completion(true)
+        }
     }
     
-//MARK: - COllectionView delegate funcs
+//MARK: - COllectionView delegate/dataSource funcs
     
     // number of sections
     func numberOfSections(in collectionView: UICollectionView) -> Int {

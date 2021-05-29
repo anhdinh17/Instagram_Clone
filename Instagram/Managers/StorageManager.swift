@@ -32,13 +32,17 @@ final class StorageManager {
     public func uploadPost(
         id: String,
         data: Data?,
-        completion: @escaping(Bool)->Void){
+        completion: @escaping(URL?)->Void){
         guard let data = data,
               let username = UserDefaults.standard.string(forKey: "username") else {
             return
         }
-        storage.child("\(username)/post/\(id).png").putData(data, metadata: nil) { (_, error) in
-            completion(error == nil)
+        let ref = storage.child("\(username)/post/\(id).png")
+        ref.putData(data, metadata: nil) { (_, error) in
+            ref.downloadURL { (url, _) in
+                completion(url)
+            }
+            
         }
     }
     
@@ -48,7 +52,14 @@ final class StorageManager {
             return
         }
         storage.child(ref).downloadURL { (url, _) in // ignore error in this closure
-            completion(url) // after runs main task, return a url
+            completion(url) // after runs main task, return a url, url này chính là url dành cho mỗi post
+        }
+    }
+    
+    // URL of the profile picture 
+    public func profilePictureURL(username: String, completion: @escaping(URL?)->Void){
+        storage.child("\(username)/profile_picture.png").downloadURL { (url, _) in
+            completion(url)
         }
     }
     
