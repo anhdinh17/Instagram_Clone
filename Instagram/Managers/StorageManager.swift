@@ -39,10 +39,9 @@ final class StorageManager {
         }
         let ref = storage.child("\(username)/post/\(id).png")
         ref.putData(data, metadata: nil) { (_, error) in
-            ref.downloadURL { (url, _) in
+            ref.downloadURL { (url, _) in // url của tấm hình post
                 completion(url)
             }
-            
         }
     }
     

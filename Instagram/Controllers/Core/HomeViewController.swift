@@ -19,6 +19,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         title = "Instagram"
         view.backgroundColor = .systemBackground
         
+        print("This is HomeViewVC")
+        
+       // collectionView?.reloadData()
+        
         configureCollectionView()
         
         fetchPosts()
@@ -36,7 +40,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         DatabaseManager.shared.posts(for: username) { [weak self](result) in
             switch result {
             case .success(let posts):
-                print("\n\n\n\n \(posts)")
+                print("\n\n\n\n There are \(posts.count) \n\n\n \(posts)")
                 
                 let group = DispatchGroup()
                 // với mỗi post của thằng array từ FB này
@@ -47,7 +51,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
                             group.leave()
                         }
                         if !success {
-                            print("Failed to crate view model")
+                            print("Failed to create view model")
                         }
                     })
                 }
@@ -66,7 +70,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
                                  username: String,
                                  completion: @escaping (Bool)->Void){
         StorageManager.shared.profilePictureURL(username: username) { [weak self](profilePictureURL) in
-            guard let postUrl = URL(string: model.postUrlString), let profilePictureUrl = profilePictureURL else{
+            guard let postUrl = URL(string: model.postUrlString),
+                  let profilePictureUrl = profilePictureURL else{
                 return
             }
             

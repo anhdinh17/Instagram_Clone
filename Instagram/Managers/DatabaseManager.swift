@@ -31,9 +31,34 @@ final class DatabaseManager {
         }
     }
     
+    // find users used for search bar in Explore
+    public func findUsers(with usernamePrefix: String,
+                          completion: @escaping([User])->Void){
+        let ref = database.collection("users") // "users" collection on Firestore Database
+        ref.getDocuments { (snapshot, error) in // get all documents within "users"
+            
+            // dòng này chuyển toàn bộ documents trên firebase database thành array của "User" struct
+            // bởi vì trong extension, chúng ta đã set code để convert dictionary(form của của database) thành Object
+            guard let users = snapshot?.documents.compactMap({User(with: $0.data())}),
+                  error == nil else {
+                completion([]) // retrun a empty array
+                return
+            }
+            
+            // filter "users" array to get the item that has matching username with usernamePrefix
+            let subset = users.filter({
+                $0.username.lowercased().hasPrefix(usernamePrefix.lowercased())
+            })
+            
+            // return a subset of [User]
+            completion(subset)
+        }
+    }
+    
     public func findUser(with email: String, completion: @escaping (User?) -> Void){
         let ref = database.collection("users") // "users" collection on Firestore Database
         ref.getDocuments { (snapshot, error) in // get all documents within "users"
+            
             // dòng này chuyển toàn bộ documents trên firebase database thành array của "User" struct
             // bởi vì trong extension, chúng ta đã set code để convert dictionary(form của của database) thành Object
             guard let users = snapshot?.documents.compactMap({User(with: $0.data())}),
