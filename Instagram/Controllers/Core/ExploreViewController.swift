@@ -64,6 +64,9 @@ class ExploreViewController: UIViewController, UISearchResultsUpdating {
         return collectionView
     }()
     
+    // create an array of [Post] to receive data from FB khi chạy DatabaseManager.explorePosts
+    private var posts = [Post]()
+    
     
 //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -85,6 +88,9 @@ class ExploreViewController: UIViewController, UISearchResultsUpdating {
         view.addSubview(collectionView)
         collectionView.delegate = self
         collectionView.dataSource = self
+        
+        // Fetchdata
+        fetchdata()
     }
     
     override func viewDidLayoutSubviews() {
@@ -106,8 +112,16 @@ class ExploreViewController: UIViewController, UISearchResultsUpdating {
                 resultsVC.update(with: results)
             }
         }
-        
     }
+    
+    //MARK: - FetchData
+    func fetchdata(){
+        DatabaseManager.shared.explorePosts { [weak self] (posts) in
+            self?.posts = posts
+            self?.collectionView.reloadData()
+        }
+    }
+    
 }
 
 extension ExploreViewController: SearchResultViewControllerDelegate {
@@ -121,14 +135,25 @@ extension ExploreViewController: SearchResultViewControllerDelegate {
 extension ExploreViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return posts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.identifier, for: indexPath) as? PhotoCollectionViewCell else{
             fatalError()
         }
-        cell.configure(with: UIImage(named: "test"))
+        // mỗi item của posts array là 1 Post instance
+        var model = posts[indexPath.row]
+        
+        cell.configure(with: URL(string: model.postUrlString))
         return cell
+    }
+    
+    // Tap on a cell
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        let post = posts[indexPath.row]
+        var vc = PostViewController(post: post)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

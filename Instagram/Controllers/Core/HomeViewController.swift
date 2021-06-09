@@ -237,11 +237,11 @@ extension HomeViewController: PostActionsCollectionViewCellDelegate {
     
     func postActionsCollectionViewCellDidTapComment(_ cell: PostActionsCollectionViewCell) {
         
-        // dùng navigationContrller để mở postVC
-        let vc = PostViewController()
-        vc.title = "Post" // set title for new vc
-        vc.modalPresentationStyle = .fullScreen
-        navigationController?.pushViewController(vc, animated: true)
+//        // dùng navigationContrller để mở postVC
+//        let vc = PostViewController()
+//        vc.title = "Post" // set title for new vc
+//        vc.modalPresentationStyle = .fullScreen
+//        navigationController?.pushViewController(vc, animated: true)
     }
     
     func postActionsCollectionViewCellDidTapShare(_ cell: PostActionsCollectionViewCell) {

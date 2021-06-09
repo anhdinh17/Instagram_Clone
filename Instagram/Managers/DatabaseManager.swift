@@ -110,4 +110,49 @@ final class DatabaseManager {
             completion(error == nil)
         }
     }
+    
+    public func explorePosts(completion: @escaping ([Post])->Void){
+        let ref = database.collection("users") // "users" collection on Firestore Database
+        ref.getDocuments { (snapshot, error) in // get all documents within "users"
+            
+            // dòng này chuyển toàn bộ documents trên firebase database thành array của "User" struct
+            // bởi vì trong extension, chúng ta đã set code để convert dictionary(form của của database) thành Object
+            guard let users = snapshot?.documents.compactMap({User(with: $0.data())}),
+                  error == nil else {
+                completion([])
+                return
+            }
+            
+            let group = DispatchGroup()
+            var aggregatePosts = [Post]()
+            
+            users.forEach { (user) in
+                let username = user.username
+                let postsRef = self.database.collection("users/\(username)/posts") // directory của posts
+                
+                group.enter()
+                
+                postsRef.getDocuments { (snapshot, error) in
+                    defer {
+                        group.leave()
+                    }
+                    // chuyển tất cả các posts trong directory của postRef thành array của [Post]
+                    guard let posts = snapshot?.documents.compactMap({Post(with: $0.data())}),
+                          error == nil else {
+                        return
+                    }
+                    
+                    // add vô aggregatePosts array
+                    aggregatePosts.append(contentsOf: posts)
+                }
+            }
+            group.notify(queue: .main) {
+                completion(aggregatePosts)
+            }
+        }
+    }
+    
+    
+    
+    
 }
