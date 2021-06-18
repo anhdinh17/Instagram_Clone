@@ -37,6 +37,7 @@ final class StorageManager {
               let username = UserDefaults.standard.string(forKey: "username") else {
             return
         }
+        // tạo directory của tấm hình post, trong directory của tấm hình post đó, upload data.
         let ref = storage.child("\(username)/post/\(id).png")
         ref.putData(data, metadata: nil) { (_, error) in
             ref.downloadURL { (url, _) in // url của tấm hình post

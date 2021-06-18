@@ -152,7 +152,34 @@ final class DatabaseManager {
         }
     }
     
+    public func getNotifications(completion: @escaping ([IGNotification]) -> Void){
+        
+        guard let username = UserDefaults.standard.string(forKey: "username")
+        else
+        {
+            completion([])
+            return
+        }
+        
+        // Vào directory cua "notifications", get all data from there, convert them to an array of "IGNotification"
+        let ref = database.collection("users").document(username).collection("notifications")
+        ref.getDocuments { (snapshot, error) in
+            guard let notifications = snapshot?.documents.compactMap({IGNotification(with: $0.data())}),
+                  error == nil else {
+                completion([])
+                return
+            }
+            
+            completion(notifications)
+        }
+    }
     
-    
+    public func insertNotification(identifier: String, data: [String:Any], for username: String){
+        let ref = database.collection("users")
+            .document(username)
+            .collection("notifications")
+            .document(identifier)
+        ref.setData(data)
+    }
     
 }

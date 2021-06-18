@@ -17,6 +17,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
+        // Add dummy notification for current user so when the app runs, current user gets notification
+        let id = NotificationsManager.newIdentifier()
+        let model = IGNotification(identifier: id,
+                                   notificationType: 1,
+                                   profilePictureUrl: "https://iosacademy.io/assets/images/brand/icon.jpg",
+                                   username: "Zuck Markerber",
+                                   dateString: String.date(from: Date()) ?? "Now",
+                                   isFollowing: nil,
+                                   postId: "123",
+                                   postUrl: "https://iosacademy.io/assets/images/courses/swiftui.png")
+//        let model2 = IGNotification(identifier: id,
+//                                   notificationType: 2,
+//                                   profilePictureUrl: "https://iosacademy.io/assets/images/brand/icon.jpg",
+//                                   username: "Zuck Markerber",
+//                                   dateString: String.date(from: Date()) ?? "Now",
+//                                   isFollowing: nil,
+//                                   postId: "123",
+//                                   postUrl: "https://iosacademy.io/assets/images/courses/swiftui.png")
+        NotificationsManager.shared.create(notification: model, for: "anhdinh")
+        
         return true
     }
 

@@ -7,8 +7,16 @@
 
 import UIKit
 
+protocol LikeNotificationTableViewCellDelegate: AnyObject {
+    func likeNotificationTableViewCell(_ cell: LikeNotificationTableViewCell,
+                                       didTapPostWith viewModel: LikeNotificationCellViewModel)
+}
+
 class LikeNotificationTableViewCell: UITableViewCell {
     static let identifier = "LikeNotificationTableViewCell"
+    
+    weak var delegate: LikeNotificationTableViewCellDelegate?
+    private var viewModel: LikeNotificationCellViewModel?
 
     private let profilePictureImageView: UIImageView = {
         let image = UIImageView()
@@ -32,12 +40,19 @@ class LikeNotificationTableViewCell: UITableViewCell {
         return label
     }()
     
+//MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
         contentView.clipsToBounds = true
         contentView.addSubview(label)
         contentView.addSubview(profilePictureImageView)
         contentView.addSubview(postImageView)
+        
+        // add tap gesture to post image
+        postImageView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapPost))
+        postImageView.addGestureRecognizer(tap)
     }
     
     required init?(coder: NSCoder) {
@@ -75,8 +90,20 @@ class LikeNotificationTableViewCell: UITableViewCell {
         profilePictureImageView.image = nil
         postImageView.image = nil
     }
+
+//MARK: - Functions
+    
+    // tap on post image
+    @objc func didTapPost(){
+        guard let vm = viewModel else {return}
+        
+        delegate?.likeNotificationTableViewCell(self,
+                                                didTapPostWith: vm)
+    }
     
     public func configure(with viewModel: LikeNotificationCellViewModel){
+        self.viewModel = viewModel
+        
         // set profile image of the user who commented on your post
         profilePictureImageView.sd_setImage(with: viewModel.profilePictureUrl,
                                             completed: nil)
