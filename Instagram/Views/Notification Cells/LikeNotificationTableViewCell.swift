@@ -40,6 +40,15 @@ class LikeNotificationTableViewCell: UITableViewCell {
         return label
     }()
     
+    private let dateLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .left
+        label.numberOfLines = 1
+        label.font = .systemFont(ofSize: 16, weight: .light)
+        label.textColor = .secondaryLabel
+        return label
+    }()
+    
 //MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -48,6 +57,7 @@ class LikeNotificationTableViewCell: UITableViewCell {
         contentView.addSubview(label)
         contentView.addSubview(profilePictureImageView)
         contentView.addSubview(postImageView)
+        contentView.addSubview(dateLabel)
         
         // add tap gesture to post image
         postImageView.isUserInteractionEnabled = true
@@ -78,10 +88,16 @@ class LikeNotificationTableViewCell: UITableViewCell {
         let labelSize = label.sizeThatFits(CGSize(
                                             width: contentView.width - profilePictureImageView.right - 25 - postSize,
                                             height: contentView.height))
+        
+        dateLabel.sizeToFit()
         label.frame = CGRect(x: profilePictureImageView.right + 10,
                              y: 0,
                              width: labelSize.width,
-                             height: contentView.height)
+                             height: contentView.height - dateLabel.height - 2)
+        dateLabel.frame = CGRect(x: profilePictureImageView.right + 10,
+                                 y: contentView.height - dateLabel.height - 2,
+                                 width: dateLabel.width,
+                                 height: dateLabel.height)
     }
     
     override func prepareForReuse() {
@@ -89,6 +105,7 @@ class LikeNotificationTableViewCell: UITableViewCell {
         label.text = nil
         profilePictureImageView.image = nil
         postImageView.image = nil
+        dateLabel.text = nil
     }
 
 //MARK: - Functions
@@ -111,5 +128,7 @@ class LikeNotificationTableViewCell: UITableViewCell {
         postImageView.sd_setImage(with: viewModel.postUrl, completed: nil)
         
         label.text = "\(viewModel.username) liked on your post."
+        
+        dateLabel.text = viewModel.date
     }
 }

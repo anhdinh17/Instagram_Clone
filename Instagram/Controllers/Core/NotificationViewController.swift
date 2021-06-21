@@ -66,6 +66,7 @@ class NotificationViewController: UIViewController {
         // nên nhớ IGNotification là của người khác
         NotificationsManager.shared.getNotifications { [weak self](models) in
             DispatchQueue.main.async {
+                print("\n\n Array of Notificaions from Firebase: \(models.count)")
                 self?.models = models // store vào models của viewController này
                 self?.createViewModels()
             }
@@ -73,6 +74,7 @@ class NotificationViewController: UIViewController {
     }
     
     private func createViewModels(){
+        print("\n\n models before forEach func: \(models.count)")
         models.forEach { (model) in
             // cái này khá hay mà mình chưa biết, đó là lấy value của model.notificationType which is an Int, sau đó IGType(rawValue:) để xét xem nếu đó là 1 thì .like, 2 là .comment, etc. Dẩn tới "type" cũng sẽ là .like,.comment or .follow
             guard let type = NotificationsManager.IGType(rawValue: model.notificationType) else {
@@ -92,7 +94,8 @@ class NotificationViewController: UIViewController {
                 viewModels.append(.like(viewModel: LikeNotificationCellViewModel(
                                             username: username,
                                             profilePictureUrl: profilePictureUrl,
-                                            postUrl: postUrl)
+                                            postUrl: postUrl,
+                                            date: model.dateString)
                                                         )
                                                     )
             case .comment:
@@ -102,7 +105,8 @@ class NotificationViewController: UIViewController {
                 viewModels.append(.comment(viewModel: CommentNotificationCellViewModel(
                                             username: username,
                                             profilePictureUrl: profilePictureUrl,
-                                            postUrl: postUrl)
+                                            postUrl: postUrl,
+                                            date: model.dateString)
                                                         )
                                                     )
             case .follow:
@@ -112,7 +116,8 @@ class NotificationViewController: UIViewController {
                 viewModels.append(.follow(viewModel: FollowNotificationCellViewModel(
                                             username: username,
                                             profilePictureUrl: profilePictureUrl,
-                                            isCurrentUserFollowing: isFollowing)
+                                            isCurrentUserFollowing: isFollowing,
+                                            date: model.dateString)
                                                         )
                                                     )
             }
@@ -125,6 +130,7 @@ class NotificationViewController: UIViewController {
             noActivityLabel.isHidden = true
             tableView.isHidden = false
             tableView.reloadData()
+            print("\n\n\n\n \(viewModels) \n viewModels.count is: \(viewModels.count)")
         }
     }
     
@@ -136,13 +142,16 @@ class NotificationViewController: UIViewController {
         viewModels = [
             .like(viewModel: LikeNotificationCellViewModel(username: "",
                                                            profilePictureUrl: iconUrlString,
-                                                           postUrl: postUrlString)),
+                                                           postUrl: postUrlString,
+                                                           date: "March 12")),
             .comment(viewModel: CommentNotificationCellViewModel(username: "jeffbazos",
                                                                  profilePictureUrl: iconUrlString,
-                                                                 postUrl: postUrlString)),
+                                                                 postUrl: postUrlString,
+                                                                 date: "April 1")),
             .follow(viewModel: FollowNotificationCellViewModel(username: "zuck21",
                                                                profilePictureUrl: iconUrlString,
-                                                               isCurrentUserFollowing: true))
+                                                               isCurrentUserFollowing: true,
+                                                               date: "May 11"))
         ]
         
         tableView.reloadData()
@@ -167,8 +176,8 @@ extension NotificationViewController: UITableViewDelegate, UITableViewDataSource
                 fatalError()
             }
             //            cell.backgroundColor = .red
-            cell.delegate = self
             cell.configure(with: viewModel)
+            cell.delegate = self
             return cell
         case .like(let viewModel):
             guard let cell = tableView.dequeueReusableCell(
@@ -177,9 +186,9 @@ extension NotificationViewController: UITableViewDelegate, UITableViewDataSource
             else {
                 fatalError()
             }
+            cell.configure(with: viewModel)
             cell.delegate = self
             cell.backgroundColor = .green
-            cell.configure(with: viewModel)
             return cell
         case .comment(let viewModel):
             guard let cell = tableView.dequeueReusableCell(
@@ -188,9 +197,9 @@ extension NotificationViewController: UITableViewDelegate, UITableViewDataSource
             else {
                 fatalError()
             }
-            cell.delegate = self
             cell.backgroundColor = .yellow
             cell.configure(with: viewModel)
+            cell.delegate = self
             return cell
             
         }

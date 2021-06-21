@@ -75,6 +75,7 @@ extension DateFormatter {
     }()
 }
 
+// extension to convert a Date() to String
 extension String {
     static func date(from date: Date) -> String? {
         let formatter = DateFormatter.formatter
