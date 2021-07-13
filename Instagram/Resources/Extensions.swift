@@ -36,6 +36,7 @@ extension UIView {
 
 extension Decodable {
     // convert dictionary to an Object I guess
+    // this is to convert data from Firbase, which is under the form of [String: Any], to an obect 
     init?(with dictionary: [String: Any]){
         guard  let data = try? JSONSerialization.data(withJSONObject: dictionary,
                                                       options: .prettyPrinted)
@@ -52,9 +53,7 @@ extension Decodable {
 }
 
 extension Encodable {
-    // func return dictionary [String: something]
-    // something ở đây có thể là caption, id, username, email
-    // vậy có nghĩa struct của object phải là dạng <variable>: String để xài đươc thằng asDictionary này
+    // this func return an object(struct) to a dictionary [String: Any] to add data on Firebase
     func asDictionary() -> [String: Any]?{
         guard let data = try? JSONEncoder().encode(self) else {
             return nil

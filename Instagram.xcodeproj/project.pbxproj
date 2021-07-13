@@ -58,6 +58,8 @@
 		67A3D09226727099000306B3 /* NotificationCellViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A3D09126727099000306B3 /* NotificationCellViewModels.swift */; };
 		67AAD3992656E37D00CB390C /* PostEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67AAD3982656E37D00CB390C /* PostEditViewController.swift */; };
 		67AAD39D2659FECC00CB390C /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67AAD39C2659FECB00CB390C /* PhotoCollectionViewCell.swift */; };
+		67F6EBCC269DE71E00F1E494 /* ProfileHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67F6EBCB269DE71E00F1E494 /* ProfileHeaderCollectionReusableView.swift */; };
+		67F6EBCF269DE95000F1E494 /* ProfileHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67F6EBCE269DE95000F1E494 /* ProfileHeaderViewModel.swift */; };
 		9DA3CD9599B3181EA506A7F7 /* Pods_Instagram.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37C74F2F0223706A0920E2B4 /* Pods_Instagram.framework */; };
 /* End PBXBuildFile section */
 
@@ -116,6 +118,8 @@
 		67A3D09126727099000306B3 /* NotificationCellViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCellViewModels.swift; sourceTree = "<group>"; };
 		67AAD3982656E37D00CB390C /* PostEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostEditViewController.swift; sourceTree = "<group>"; };
 		67AAD39C2659FECB00CB390C /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		67F6EBCB269DE71E00F1E494 /* ProfileHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
+		67F6EBCE269DE95000F1E494 /* ProfileHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewModel.swift; sourceTree = "<group>"; };
 		6E4A5DF59545872D170D7F16 /* Pods-Instagram.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instagram.release.xcconfig"; path = "Target Support Files/Pods-Instagram/Pods-Instagram.release.xcconfig"; sourceTree = "<group>"; };
 		92AB2CD12A25236473EE812B /* Pods-Instagram.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instagram.debug.xcconfig"; path = "Target Support Files/Pods-Instagram/Pods-Instagram.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -203,6 +207,7 @@
 				678315D426278C9700542A43 /* SignInHeaderView.swift */,
 				678315DA2627BF0F00542A43 /* IGTextField.swift */,
 				67AAD39C2659FECB00CB390C /* PhotoCollectionViewCell.swift */,
+				67F6EBCB269DE71E00F1E494 /* ProfileHeaderCollectionReusableView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -230,6 +235,7 @@
 				67760B81263502FE0033645E /* PostCaptionCollectionViewCellViewModel.swift */,
 				67760B84263503570033645E /* PostDatetimeCollectionViewCellViewModel.swift */,
 				67A3D09126727099000306B3 /* NotificationCellViewModels.swift */,
+				67F6EBCE269DE95000F1E494 /* ProfileHeaderViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -423,6 +429,7 @@
 				678315932625F50300542A43 /* CaptionViewController.swift in Sources */,
 				6773C40F2638EA8500344588 /* PostCaptionCollectionViewCell.swift in Sources */,
 				6773C40C2638EA7200344588 /* PostLikesCollectionViewCell.swift in Sources */,
+				67F6EBCC269DE71E00F1E494 /* ProfileHeaderCollectionReusableView.swift in Sources */,
 				678315882625F46C00542A43 /* TabBarViewController.swift in Sources */,
 				67A3D08C267142DA000306B3 /* NotificationsManager.swift in Sources */,
 				678315A82625F6C800542A43 /* Notification.swift in Sources */,
@@ -454,6 +461,7 @@
 				678315AE2625F73B00542A43 /* DatabaseManager.swift in Sources */,
 				67AAD3992656E37D00CB390C /* PostEditViewController.swift in Sources */,
 				67A3D08626713FE2000306B3 /* LikeNotificationTableViewCell.swift in Sources */,
+				67F6EBCF269DE95000F1E494 /* ProfileHeaderViewModel.swift in Sources */,
 				678315A52625F6BF00542A43 /* Relationship.swift in Sources */,
 				678315A22625F6B200542A43 /* Post.swift in Sources */,
 				67760B82263502FE0033645E /* PostCaptionCollectionViewCellViewModel.swift in Sources */,

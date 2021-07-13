@@ -22,7 +22,7 @@ final class DatabaseManager {
         // cái đống dưới này là 1 array của Post struct trên Storage
         ref.getDocuments { (snapshot, error) in
             guard let posts = snapshot?.documents.compactMap({
-                Post(with: $0.data()) // dòng này hiểu là: với mỗi element của array, lấy hết data: caption, id, likers, postedDate
+                Post(with: $0.data()) // dòng này hiểu là: với mỗi element(là 1 object) của array, convert data bên trong [String:Any] thành 1 object của "Post"
             }),error == nil else {
                 return
             }
@@ -101,7 +101,7 @@ final class DatabaseManager {
         // tạo 1 directory based on what we already have:
         // under users/username ( cái mình đã tạo rồi khi tạo account) -> tạo 1 subfile post/ rồi trong đó tạo thêm newPost.id
         let reference = database.document("users/\(username)/posts/\(newPost.id)")
-        guard let data = newPost.asDictionary() else { // get a dictionary from asDictionary()
+        guard let data = newPost.asDictionary() else { // convert object Post to dictionary to add to Firebase
             completion(false)
             return
         }
@@ -180,6 +180,71 @@ final class DatabaseManager {
             .collection("notifications")
             .document(identifier)
         ref.setData(data)
+    }
+    
+    // Xai trong NotificationVC
+    // get a post from an id
+    public func getPost(with identifier: String,
+                        from username: String,
+                        completion: @escaping (Post?)->Void){
+        let ref = database.collection("users")
+            .document(username)
+            .collection("notifications")
+            .document(identifier)
+        ref.getDocument { (snapshot, error) in
+            // lay het data trong id nay
+            // cái này mình ko xài snapshot.documents.compactmap bởi vì mình chỉ lấy id của 1 thằng, chứ ko phải chuyển thành array
+            guard let data = snapshot?.data(),
+                  error == nil else {
+                completion(nil)
+                return
+            }
+            completion(Post(with: data)) //convert data to an object, extension da lam roi
+        }
+    }
+    
+    /// Follow states that are supported
+    enum RelationshipState {
+        case follow
+        case unfollow
+    }
+    
+    public func updateRelationship(
+        state: RelationshipState,
+        for targetUsername: String,
+        completion: @escaping (Bool) -> Void
+    ) {
+        guard let currentUsername = UserDefaults.standard.string(forKey: "username") else {
+            completion(false)
+            return
+        }
+
+        // directory/path
+        // directory này trên FB chưa có nhưng nếu ta sử dụng setData, deleter, etc. FB sẽ tự động tạo directory mà ta ref
+        let currentFollowing = database.collection("users")
+            .document(currentUsername)
+            .collection("following")
+
+        let targetUserFollowers = database.collection("users")
+            .document(targetUsername)
+            .collection("followers")
+
+        switch state {
+        case .unfollow:
+            // Remove follower for currentUser following list
+            currentFollowing.document(targetUsername).delete()
+            // Remove currentUser from targetUser followers list
+            targetUserFollowers.document(currentUsername).delete()
+
+            completion(true)
+        case .follow:
+            // Add follower for requester following list
+            currentFollowing.document(targetUsername).setData(["valid": "1"])
+            // Add currentUser to targetUser followers list
+            targetUserFollowers.document(currentUsername).setData(["valid": "1"])
+
+            completion(true)
+        }
     }
     
 }

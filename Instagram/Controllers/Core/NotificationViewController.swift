@@ -242,6 +242,23 @@ extension NotificationViewController: LikeNotificationTableViewCellDelegate,Comm
                                          didTapButton isFollowing: Bool,
                                          viewModel: FollowNotificationCellViewModel) {
         let username = viewModel.username
+        
+        print()
+        
+        DatabaseManager.shared.updateRelationship(state: isFollowing ? .follow : .unfollow,
+                                                  for: username) { [weak self](success) in
+            if !success {
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(title: "Woops",
+                                                  message: "Unable to perform action",
+                                                  preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Dismiss",
+                                                  style: .cancel,
+                                                  handler: nil))
+                    self?.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
     }
     
     func likeNotificationTableViewCell(_ cell: LikeNotificationTableViewCell, didTapPostWith viewModel: LikeNotificationCellViewModel) {
@@ -286,6 +303,24 @@ extension NotificationViewController: LikeNotificationTableViewCellDelegate,Comm
         let username = username
         guard let postID = model.postId else {
             return
+        }
+        
+        // Find post by id from target user
+        DatabaseManager.shared.getPost(with: postID,
+                                       from: username) { [weak self](post) in
+            DispatchQueue.main.async {
+                guard let post = post else {
+                    // pop up an alert if we can't open the post or there's some error
+                    let alert = UIAlertController(title: "Oops", message: "We are unable to open the post.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+                    self?.present(alert, animated: true, completion: nil)
+                    return
+                }
+                
+                // go to PostVC
+                let vc = PostViewController(post: post)
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 }
