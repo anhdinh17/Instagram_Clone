@@ -37,6 +37,8 @@ class ProfileViewController: UIViewController {
         configureNavBar()
         
         configureCollectionView()
+        
+        fetchProfileInfo()
     }
     
     override func viewDidLayoutSubviews() {
@@ -61,6 +63,17 @@ class ProfileViewController: UIViewController {
         //navigationController?.pushViewController(vc, animated: true)
     }
     
+    private func fetchProfileInfo(){
+        // Profile picture url
+        StorageManager.shared.profilePictureURL(username: user.username) { (url) in
+            
+        }
+        
+        // if  profie is ot for current user
+        if !isCurrentUser {
+            
+        }
+    }
 }
 
 //MARK: - Setup CollectionView
@@ -100,6 +113,7 @@ extension ProfileViewController {
             ProfileHeaderCollectionReusableView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: ProfileHeaderCollectionReusableView.identifier)
+        
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -133,6 +147,21 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
                 for: indexPath) as? ProfileHeaderCollectionReusableView else {
             return UICollectionReusableView()
         }
+        
+        let viewModel = ProfileHeaderViewModel(
+            profilePicture: nil,
+            followerCount: 200,
+            followingCount: 170,
+            postCount: 33,
+            buttonType: self.isCurrentUser ? .edit : .follow(isFollowing: true),
+            name: "J-z",
+            bio: "This is our first profile")
+        
+        // Delegate for protocol
+        headerView.countContainerView.delegate = self
+        
+        headerView.configure(with: viewModel)
+        
         return headerView
     }
     
@@ -142,4 +171,33 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
 //        let vc = PostViewController(post: post)
 //        navigationController?.pushViewController(vc, animated: true)
     }
+}
+
+//MARK: - Protocol from ProfileHeaderCountView
+extension ProfileViewController: ProfileHeaderCountViewDelegate{
+    func profileHeaderCountViewDidTapFollowers(_ containerView: ProfileHeaderCountView) {
+        
+    }
+    
+    func profileHeaderCountViewDidTapFollowing(_ containerView: ProfileHeaderCountView) {
+        
+    }
+    
+    func profileHeaderCountViewDidTapPosts(_ containerView: ProfileHeaderCountView) {
+        
+    }
+    
+    func profileHeaderCountViewDidTapEditProfile(_ containerView: ProfileHeaderCountView) {
+        
+    }
+    
+    func profileHeaderCountViewDidTapFollow(_ containerView: ProfileHeaderCountView) {
+        
+    }
+    
+    func profileHeaderCountViewDidTapUnFollow(_ containerView: ProfileHeaderCountView) {
+        
+    }
+    
+    
 }
