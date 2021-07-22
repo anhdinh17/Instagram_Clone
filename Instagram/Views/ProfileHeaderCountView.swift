@@ -135,9 +135,9 @@ class ProfileHeaderCountView: UIView {
     }
     
     func configure(with viewModel: ProfileHeaderCountViewModel){
-        followerCountButton.setTitle("\(viewModel.followerCount)", for: .normal)
-        followingCountButton.setTitle("\(viewModel.followingCount)", for: .normal)
-        postCountButton.setTitle("\(viewModel.postsCount)", for: .normal)
+        followerCountButton.setTitle("\(viewModel.followerCount) \n Followers", for: .normal)
+        followingCountButton.setTitle("\(viewModel.followingCount) \n Following", for: .normal)
+        postCountButton.setTitle("\(viewModel.postsCount) \n Posts", for: .normal)
         
         self.action = viewModel.actionType
         

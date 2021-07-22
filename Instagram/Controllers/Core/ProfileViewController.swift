@@ -18,6 +18,8 @@ class ProfileViewController: UIViewController {
     // CollectionView
     private var collectionView: UICollectionView?
     
+    private var headerViewModel: ProfileHeaderViewModel?
+    
 //MARK: - Init
     init(user: User) {
         self.user = user
@@ -64,14 +66,62 @@ class ProfileViewController: UIViewController {
     }
     
     private func fetchProfileInfo(){
-        // Profile picture url
-        StorageManager.shared.profilePictureURL(username: user.username) { (url) in
-            
+
+        var profilePictureUrl: URL?
+        var buttonType: ProfileButtonType = .edit
+        var posts = 0
+        var followers = 0
+        var following = 0
+        var name: String?
+        var bio: String?
+        
+        let group = DispatchGroup()
+        
+        group.enter()
+        DatabaseManager.shared.getUserCounts(username: user.username) { (result) in
+            defer{
+                group.leave()
+            }
+            posts = result.posts
+            followers = result.followers
+            following = result.following
         }
         
-        // if  profie is ot for current user
+        // Bio, name
+        DatabaseManager.shared.getUserInfo(username: user.username) { (userInfo) in
+            name = userInfo?.name
+            bio = userInfo?.bio
+        }
+        
+        
+        // Profile picture url
+        group.enter()
+        StorageManager.shared.profilePictureURL(username: user.username) { (url) in
+            defer{
+                group.leave()
+            }
+            profilePictureUrl = url
+        }
+        
+        // if profie is not for current user
         if !isCurrentUser {
+            group.enter()
+            DatabaseManager.shared.isFollowing(targetUsername: user.username) { (isFollowing) in
+                buttonType = .follow(isFollowing: true)
+            }
+        }
+        
+        group.notify(queue: .main) {
+            self.headerViewModel = ProfileHeaderViewModel(
+                profilePicture: profilePictureUrl,
+                followerCount: followers,
+                followingCount: following,
+                postCount: posts,
+                buttonType: buttonType,
+                name: name,
+                bio: bio)
             
+            self.collectionView?.reloadData() // Reload collectionView
         }
     }
 }
@@ -140,6 +190,7 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
     
     // FUNC TO DISPLAY HEADER
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
         guard kind == UICollectionView.elementKindSectionHeader,
               let headerView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
@@ -148,20 +199,13 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
             return UICollectionReusableView()
         }
         
-        let viewModel = ProfileHeaderViewModel(
-            profilePicture: nil,
-            followerCount: 200,
-            followingCount: 170,
-            postCount: 33,
-            buttonType: self.isCurrentUser ? .edit : .follow(isFollowing: true),
-            name: "J-z",
-            bio: "This is our first profile")
-        
-        // Delegate for protocol
-        headerView.countContainerView.delegate = self
-        
-        headerView.configure(with: viewModel)
-        
+        if let viewModel = headerViewModel {
+            // Delegate for protocol
+            headerView.countContainerView.delegate = self
+            
+            headerView.configure(with: viewModel)
+        }
+
         return headerView
     }
     
@@ -188,7 +232,14 @@ extension ProfileViewController: ProfileHeaderCountViewDelegate{
     }
     
     func profileHeaderCountViewDidTapEditProfile(_ containerView: ProfileHeaderCountView) {
-        
+        let vc = EditProfileViewController()
+        vc.completion = {[weak self] in
+            self?.headerViewModel = nil
+            self?.fetchProfileInfo()
+            // refresh header info
+        }
+        let navVC = UINavigationController(rootViewController: vc)
+        present(navVC, animated: true, completion: nil)
     }
     
     func profileHeaderCountViewDidTapFollow(_ containerView: ProfileHeaderCountView) {
@@ -198,6 +249,5 @@ extension ProfileViewController: ProfileHeaderCountViewDelegate{
     func profileHeaderCountViewDidTapUnFollow(_ containerView: ProfileHeaderCountView) {
         
     }
-    
-    
+        
 }

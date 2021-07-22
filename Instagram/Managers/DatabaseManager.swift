@@ -246,5 +246,135 @@ final class DatabaseManager {
             completion(true)
         }
     }
+   
+    // Func to get number of posts, followers, followings from an user.
+    public func getUserCounts(
+        username: String,
+        completion: @escaping ((followers: Int, following: Int, posts: Int)) -> Void)
+    {
+        let userRef = database.collection("users").document(username)
+        
+        // variables to store number of followers, followings, posts
+        var followers = 0
+        var following = 0
+        var posts = 0
+        
+        // Using DispatchGroup to run asynchronous
+        let group = DispatchGroup()
+            // enter group 3 times because we run the getting-data process 3 times
+        group.enter()
+        group.enter()
+        group.enter()
+        
+        userRef.collection("posts").getDocuments { (snaphot, error) in
+            defer{
+                group.leave()
+            }
+            
+            // get the number of documents which is also the number of posts
+            guard let count = snaphot?.documents.count, error == nil else{
+                return
+            }
+            
+            posts = count
+        }
+        
+        userRef.collection("followers").getDocuments { (snaphot, error) in
+            defer{
+                group.leave()
+            }
+            
+            // get the number of documents which is also the number of followers
+            guard let count = snaphot?.documents.count, error == nil else{
+                return
+            }
+            
+            followers = count
+        }
+        
+        userRef.collection("following").getDocuments { (snaphot, error) in
+            defer{
+                group.leave()
+            }
+            
+            // get the number of documents which is also the number of following
+            guard let count = snaphot?.documents.count, error == nil else{
+                return
+            }
+            
+            following = count
+        }
+        
+        group.notify(queue: .global()) {
+            // pass the varialbes above to the tuple
+            let result = (followers: followers,
+                          following: following,
+                          posts: posts)
+            completion(result)
+        }
+    }
+    
+    // Func to check if current user follows target user or not
+    public func isFollowing(
+        targetUsername: String,
+        completion: @escaping (Bool) -> Void)
+    {
+        guard let currentUsername = UserDefaults.standard.string(forKey: "username") else {
+            return
+        }
+        
+        let ref = database.collection("users")
+                            .document(targetUsername)
+                            .collection("followers")
+                            .document(currentUsername)
+        ref.getDocument { (snapshot, error) in
+            guard snapshot != nil, error == nil else {
+                // Current user not following target user
+                completion(false)
+                return
+            }
+            
+            // Current user follows target user
+            completion(true)
+        }
+    }
+    
+    public func getUserInfo(
+        username: String,
+        completion: @escaping (UserInfo?) -> Void)
+    {
+        let ref = database.collection("users")
+            .document(username)
+            .collection("information")
+            .document("basic")
+        ref.getDocument { (snapshot, error) in
+            guard let data = snapshot?.data(),
+                  // chuyển data trên FB thành object của UserInfo vì trong extension ta đã có func đó
+                  let userInfo = UserInfo(with: data) else {
+                completion(nil)
+                return
+            }
+            completion(userInfo)
+        }
+    }
+    
+    public func setUserInfo(
+        userInfo: UserInfo,
+        completion: @escaping (Bool) -> Void)
+    {
+        guard let username = UserDefaults.standard.string(forKey: "username"),
+              // Convert Object to Dictionary to post to FB
+              let data = userInfo.asDictionary() else {
+            return
+        }
+        
+        let ref = database.collection("users")
+            .document(username)
+            .collection("information")
+            .document("basic")
+        ref.setData(data) { (error) in
+            completion(error == nil)
+        }
+    }
     
 }
