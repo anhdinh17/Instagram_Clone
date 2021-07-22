@@ -22,6 +22,8 @@ class ProfileHeaderCountView: UIView {
     
     private var action = ProfileButtonType.edit
     
+    private var isFollowing = false
+    
     private let followerCountButton: UIButton = {
         let button = UIButton()
         button.setTitleColor(.label, for: .normal)
@@ -124,13 +126,15 @@ class ProfileHeaderCountView: UIView {
         switch action {
         case .edit:
             delegate?.profileHeaderCountViewDidTapEditProfile(self)
-        case .follow(let isFollowing):
+        case .follow:
             if isFollowing {
                 // If already following, unfollow
                 delegate?.profileHeaderCountViewDidTapUnFollow(self)
             } else {
                 delegate?.profileHeaderCountViewDidTapFollow(self)
             }
+            self.isFollowing = !isFollowing
+            updateFollowButton()
         }
     }
     
@@ -150,16 +154,21 @@ class ProfileHeaderCountView: UIView {
             actionButton.layer.borderColor = UIColor.tertiaryLabel.cgColor
 
         case .follow(let isFollowing):
-            actionButton.backgroundColor = isFollowing ? .systemBackground : .systemBlue
-            actionButton.setTitle(isFollowing ? "Unfollow" : "Follow", for: .normal)
-            actionButton.setTitleColor(isFollowing ? .label : .white, for: .normal)
-            
-            if isFollowing {
-                actionButton.layer.borderWidth = 0.5
-                actionButton.layer.borderColor = UIColor.tertiaryLabel.cgColor
-            } else {
-                actionButton.layer.borderWidth = 0
-            }
+            self.isFollowing = isFollowing
+            updateFollowButton()
+        }
+    }
+    
+    private func updateFollowButton(){
+        actionButton.backgroundColor = isFollowing ? .systemBackground : .systemBlue
+        actionButton.setTitle(isFollowing ? "Unfollow" : "Follow", for: .normal)
+        actionButton.setTitleColor(isFollowing ? .label : .white, for: .normal)
+        
+        if isFollowing {
+            actionButton.layer.borderWidth = 0.5
+            actionButton.layer.borderColor = UIColor.tertiaryLabel.cgColor
+        } else {
+            actionButton.layer.borderWidth = 0
         }
     }
     

@@ -9,6 +9,7 @@ import UIKit
 
 class ExploreViewController: UIViewController, UISearchResultsUpdating {
 
+    // Search bar
     private let searchVC = UISearchController(searchResultsController: SearchResultViewController())
     
     // CollectionView
@@ -124,6 +125,7 @@ class ExploreViewController: UIViewController, UISearchResultsUpdating {
     
 }
 
+// Protocol from SearchResultViewControllerDelegate
 extension ExploreViewController: SearchResultViewControllerDelegate {
     func searchResultViewController(_ vc: SearchResultViewController, didSelectResultWith user: User) {
         let vc = ProfileViewController(user: user)

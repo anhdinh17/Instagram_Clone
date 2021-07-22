@@ -39,6 +39,21 @@ class TabBarViewController: UITabBarController {
         nav4.navigationBar.tintColor = .label
         nav5.navigationBar.tintColor = .label
         
+        // Phần này hình như là chỉnh back button trên screen
+        if #available(iOS 14.0, *){
+            home.navigationItem.backButtonDisplayMode = .minimal
+            explore.navigationItem.backButtonDisplayMode = .minimal
+            camera.navigationItem.backButtonDisplayMode = .minimal
+            activity.navigationItem.backButtonDisplayMode = .minimal
+            profile.navigationItem.backButtonDisplayMode = .minimal
+        }else {
+            nav1.navigationItem.backButtonTitle = ""
+            nav2.navigationItem.backButtonTitle = ""
+            nav3.navigationItem.backButtonTitle = ""
+            nav4.navigationItem.backButtonTitle = ""
+            nav5.navigationItem.backButtonTitle = ""
+        }
+        
         // Define tab items
         nav1.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 1)
         nav2.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "safari"), tag: 1)

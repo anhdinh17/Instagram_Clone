@@ -52,6 +52,7 @@ class SearchResultViewController: UIViewController, UITableViewDelegate, UITable
         return cell
     }
     
+    // Hiểu là: khi search ra 1 list results, bấm vào 1 result, kick off protocol. In this case, ExploreVC là delegate của class này nên sẽ execute protocol func ở bên ExploreVC.
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         self.delegate?.searchResultViewController(self, didSelectResultWith: users[indexPath.row])

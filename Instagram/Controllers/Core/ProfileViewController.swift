@@ -18,7 +18,11 @@ class ProfileViewController: UIViewController {
     // CollectionView
     private var collectionView: UICollectionView?
     
+    // Header
     private var headerViewModel: ProfileHeaderViewModel?
+    
+    // Array of Post to fetch data to cells
+    private var posts: [Post] = []
     
 //MARK: - Init
     init(user: User) {
@@ -65,8 +69,29 @@ class ProfileViewController: UIViewController {
         //navigationController?.pushViewController(vc, animated: true)
     }
     
+//MARK: - fetchProfileInfo
     private func fetchProfileInfo(){
-
+        
+        let username = user.username
+        
+        let group = DispatchGroup()
+        
+        // Fetch data from FB to get the posts from FB
+        group.enter()
+        DatabaseManager.shared.posts(for: username) { [weak self] (result) in
+            defer{
+                group.leave()
+            }
+            switch result {
+            case .success(let post):
+                self?.posts = post
+            case .failure:
+                break
+            }
+        }
+        
+        
+        // These variables are for fetching Header info
         var profilePictureUrl: URL?
         var buttonType: ProfileButtonType = .edit
         var posts = 0
@@ -74,9 +99,7 @@ class ProfileViewController: UIViewController {
         var following = 0
         var name: String?
         var bio: String?
-        
-        let group = DispatchGroup()
-        
+
         group.enter()
         DatabaseManager.shared.getUserCounts(username: user.username) { (result) in
             defer{
@@ -107,11 +130,15 @@ class ProfileViewController: UIViewController {
         if !isCurrentUser {
             group.enter()
             DatabaseManager.shared.isFollowing(targetUsername: user.username) { (isFollowing) in
+                defer{
+                    group.leave()
+                }
                 buttonType = .follow(isFollowing: true)
             }
         }
         
         group.notify(queue: .main) {
+            // Sau khi leave thì modify Header
             self.headerViewModel = ProfileHeaderViewModel(
                 profilePicture: profilePictureUrl,
                 followerCount: followers,
@@ -121,7 +148,7 @@ class ProfileViewController: UIViewController {
                 name: name,
                 bio: bio)
             
-            self.collectionView?.reloadData() // Reload collectionView
+            self.collectionView?.reloadData() // Reload collectionView cho Header and display posts in cells
         }
     }
 }
@@ -175,7 +202,7 @@ extension ProfileViewController {
 //MARK: - CollectionView Delegate and  DataSource
 extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 30
+        return posts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -184,7 +211,8 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
                 for: indexPath) as? PhotoCollectionViewCell else {
             fatalError()
         }
-        cell.configure(with: UIImage(named: "test"))
+        // lấy postURL từ post rồi display lên cells
+        cell.configure(with: URL(string: posts[indexPath.row].postUrlString))
         return cell
     }
     
@@ -211,9 +239,9 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
     
     // Tap on 1 item
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let post = posts[indexPath.row]
-//        let vc = PostViewController(post: post)
-//        navigationController?.pushViewController(vc, animated: true)
+        let post = posts[indexPath.row]
+        let vc = PostViewController(post: post)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
