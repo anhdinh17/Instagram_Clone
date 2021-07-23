@@ -7,8 +7,15 @@
 
 import UIKit
 
+protocol ProfileHeaderCollectionReusableViewDelegate: AnyObject {
+    func profileHeaderCollectionReusableViewDidTapProfilePicture(_ header: ProfileHeaderCollectionReusableView)
+}
+
 class ProfileHeaderCollectionReusableView: UICollectionReusableView {
+    
     static let identifier = "ProfileHeaderCollectionReusableView"
+    
+    weak var delegate: ProfileHeaderCollectionReusableViewDelegate?
     
     private let imageView: UIImageView = {
         let image = UIImageView()
@@ -16,6 +23,8 @@ class ProfileHeaderCollectionReusableView: UICollectionReusableView {
         image.contentMode = .scaleAspectFill
         image.layer.masksToBounds = true
         image.backgroundColor = .systemBlue
+        // make image tapable so users can change their profile pics
+        image.isUserInteractionEnabled = true
         return image
     }()
     
@@ -42,6 +51,10 @@ class ProfileHeaderCollectionReusableView: UICollectionReusableView {
         countContainerView.backgroundColor = .yellow
         addSubview(imageView)
         addSubview(bioLabel)
+        
+        // Add tap gesture to porfile image
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
+        imageView.addGestureRecognizer(tap)
     }
     
     required init?(coder: NSCoder) {
@@ -76,7 +89,8 @@ class ProfileHeaderCollectionReusableView: UICollectionReusableView {
         super.prepareForReuse()
         imageView.image = nil
     }
-    
+
+//MARK: - Functions
     public func configure(with viewModel: ProfileHeaderViewModel){
         imageView.sd_setImage(with: viewModel.profilePicture, completed: nil)
         
@@ -94,5 +108,9 @@ class ProfileHeaderCollectionReusableView: UICollectionReusableView {
             postsCount: viewModel.postCount,
             actionType: viewModel.buttonType)
         countContainerView.configure(with: containerViewModel)
+    }
+    
+    @objc func didTapImage(){
+        delegate?.profileHeaderCollectionReusableViewDidTapProfilePicture(self)
     }
 }

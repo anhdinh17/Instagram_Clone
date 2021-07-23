@@ -234,6 +234,9 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
             headerView.configure(with: viewModel)
         }
 
+        // Delegate for protocol
+        headerView.delegate = self
+        
         return headerView
     }
     
@@ -242,6 +245,71 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
         let post = posts[indexPath.row]
         let vc = PostViewController(post: post)
         navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+//MARK: - Protocol form ProfileHeaderCollectionReusableView
+extension ProfileViewController: ProfileHeaderCollectionReusableViewDelegate {
+    func profileHeaderCollectionReusableViewDidTapProfilePicture(_ header: ProfileHeaderCollectionReusableView) {
+        
+        // Check if current user is me so that if I click on other user's profile image, I can't change it
+        guard isCurrentUser else {
+            return
+        }
+        
+        let sheet = UIAlertController(title: "Change Picture",
+                                      message: "Change your profile picture.",
+                                      preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        sheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { [weak self] (_) in
+            DispatchQueue.main.async {
+                //view controller that manages the system interfaces for taking pictures, recording movies, and choosing items from the user's media library.
+                let picker = UIImagePickerController()
+                picker.allowsEditing = true // this one is for cropping the image to make it square
+                picker.sourceType = .camera
+                picker.delegate = self
+                self?.present(picker, animated: true)
+            }
+        }))
+        sheet.addAction(UIAlertAction(title: "Choose Photo", style: .default, handler: { [weak self] (_) in
+            DispatchQueue.main.async {
+                let picker = UIImagePickerController()
+                picker.allowsEditing = true
+                picker.sourceType = .photoLibrary
+                picker.delegate = self
+                self?.present(picker, animated: true)
+            }
+        }))
+        
+        present(sheet, animated: true, completion: nil)
+    }
+}
+
+//MARK: - Conform to UIImagePickerControllerDelegate, UINavigationControllerDelegate to choose photos or take photos
+extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        picker.dismiss(animated: true, completion: nil)
+        
+        guard let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else {
+            return
+        }
+        // Upload image to FB for a new profile picture
+        StorageManager.shared.uploadProfilePicture(
+            username: user.username,
+            data: image.pngData()) { [weak self] (success) in
+            if success {
+                // Nếu sucess thì ta clear everything rồi fetch lại data
+                self?.headerViewModel = nil
+                self?.posts = []
+                self?.fetchProfileInfo() // fetch lại mọi thứ
+            }
+        }
+        
     }
 }
 
@@ -256,7 +324,14 @@ extension ProfileViewController: ProfileHeaderCountViewDelegate{
     }
     
     func profileHeaderCountViewDidTapPosts(_ containerView: ProfileHeaderCountView) {
-        
+        guard posts.count >= 18 else
+        {
+            return
+        }
+        collectionView?.setContentOffset(CGPoint(
+                                            x: 0,
+                                            y: view.width * 0.7),
+                                         animated: true)
     }
     
     func profileHeaderCountViewDidTapEditProfile(_ containerView: ProfileHeaderCountView) {
