@@ -76,6 +76,24 @@ final class DatabaseManager {
         }
     }
     
+    /// Find user with username
+    /// - Parameters:
+    ///   - username: Source username
+    ///   - completion: Result callback
+    public func findUser(username: String, completion: @escaping (User?) -> Void) {
+        let ref = database.collection("users")
+        ref.getDocuments { snapshot, error in
+            guard let users = snapshot?.documents.compactMap({ User(with: $0.data()) }),
+                  error == nil else {
+                completion(nil)
+                return
+            }
+
+            let user = users.first(where: { $0.username == username })
+            completion(user)
+        }
+    }
+    
     // Add user to Firebase Database
     public func createUser(newUser: User, completion: @escaping (Bool)->Void){
         // tạo directory: "users"/username trên firebase Database
@@ -328,7 +346,7 @@ final class DatabaseManager {
                             .collection("followers")
                             .document(currentUsername)
         ref.getDocument { (snapshot, error) in
-            guard snapshot != nil, error == nil else {
+            guard snapshot?.data() != nil, error == nil else {
                 // Current user not following target user
                 completion(false)
                 return
@@ -374,6 +392,34 @@ final class DatabaseManager {
             .document("basic")
         ref.setData(data) { (error) in
             completion(error == nil)
+        }
+    }
+    
+    // Get the array of followers
+    public func followers(for username: String, completion: @escaping ([String]) -> Void){
+        let ref = database.collection("users")
+                            .document(username)
+                            .collection("followers")
+        ref.getDocuments { snapshot, error in
+            guard let usernames = snapshot?.documents.compactMap({$0.documentID}), error == nil else {
+                completion([])
+                return
+            }
+            completion(usernames)
+        }
+    }
+    
+    // Get users that username is follwing
+    public func following(for username: String, completion: @escaping ([String]) -> Void){
+        let ref = database.collection("users")
+                            .document(username)
+                            .collection("following")
+        ref.getDocuments { snapshot, error in
+            guard let usernames = snapshot?.documents.compactMap({$0.documentID}), error == nil else {
+                completion([])
+                return
+            }
+            completion(usernames)
         }
     }
     

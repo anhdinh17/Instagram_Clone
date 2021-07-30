@@ -46,13 +46,7 @@ class FollowNotificationTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let followButton: UIButton = {
-        let button = UIButton()
-        button.layer.masksToBounds = true
-        button.layer.cornerRadius = 4
-        
-        return button
-    }()
+    private let followButton = IGFollowButton()
     
     //MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -131,22 +125,11 @@ class FollowNotificationTableViewCell: UITableViewCell {
                                                   didTapButton: !isFollowing,
                                                   viewModel: vm)
         isFollowing = !isFollowing
-        updateButton()
-    }
-    
-    private func updateButton(){
-        // set title for button using TERNARY condition
-        followButton.setTitle(isFollowing ? "Unfollow" : "Follow", for: .normal)
-        followButton.backgroundColor = isFollowing ? .tertiarySystemBackground : .systemBlue
-        followButton.setTitleColor(isFollowing ? .label : .white, for: .normal)
         
-        // if current user is follwing, we give border to button
-        if isFollowing {
-            followButton.layer.borderWidth = 0.5
-            followButton.layer.borderColor = UIColor.secondaryLabel.cgColor
-        }
+        // Using func configure from IGFollowButton()
+        followButton.configure(for: isFollowing ? .unfollow : .follow)
     }
-    
+        
     public func configure(with viewModel: FollowNotificationCellViewModel){
         self.viewModel = viewModel
         
@@ -157,5 +140,7 @@ class FollowNotificationTableViewCell: UITableViewCell {
         isFollowing = viewModel.isCurrentUserFollowing
         
         dateLabel.text = viewModel.date
+        
+        followButton.configure(for: isFollowing ? .unfollow : .follow)
     }
 }

@@ -133,7 +133,7 @@ class ProfileViewController: UIViewController {
                 defer{
                     group.leave()
                 }
-                buttonType = .follow(isFollowing: true)
+                buttonType = .follow(isFollowing: isFollowing)
             }
         }
         
@@ -316,11 +316,13 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
 //MARK: - Protocol from ProfileHeaderCountView
 extension ProfileViewController: ProfileHeaderCountViewDelegate{
     func profileHeaderCountViewDidTapFollowers(_ containerView: ProfileHeaderCountView) {
-        
+        let vc = ListViewController(type: .followers(user: user))
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func profileHeaderCountViewDidTapFollowing(_ containerView: ProfileHeaderCountView) {
-        
+        let vc = ListViewController(type: .following(user: user))
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func profileHeaderCountViewDidTapPosts(_ containerView: ProfileHeaderCountView) {
@@ -346,11 +348,29 @@ extension ProfileViewController: ProfileHeaderCountViewDelegate{
     }
     
     func profileHeaderCountViewDidTapFollow(_ containerView: ProfileHeaderCountView) {
-        
+        DatabaseManager.shared.updateRelationship(
+            state: .follow,
+            for: user.username) { [weak self] success in
+            if !success {
+                print("Failed to follow")
+                DispatchQueue.main.async {
+                    self?.collectionView?.reloadData()
+                }
+            }
+        }
     }
     
     func profileHeaderCountViewDidTapUnFollow(_ containerView: ProfileHeaderCountView) {
-        
+        DatabaseManager.shared.updateRelationship(
+            state: .unfollow,
+            for: user.username) { [weak self] success in
+            if !success {
+                print("Failed to follow")
+                DispatchQueue.main.async {
+                    self?.collectionView?.reloadData()
+                }
+            }
+        }
     }
         
 }
