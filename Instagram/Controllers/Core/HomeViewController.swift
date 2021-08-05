@@ -75,6 +75,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
                 return
             }
             
+            // Set enum
             let postData: [HomeFeedCellType] = [
                 .poster(
                     viewModel: PosterCollectionViewCellViewModel(

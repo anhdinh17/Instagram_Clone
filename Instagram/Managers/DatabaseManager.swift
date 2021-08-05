@@ -23,7 +23,10 @@ final class DatabaseManager {
         ref.getDocuments { (snapshot, error) in
             guard let posts = snapshot?.documents.compactMap({
                 Post(with: $0.data()) // dòng này hiểu là: với mỗi element(là 1 object) của array, convert data bên trong [String:Any] thành 1 object của "Post"
-            }),error == nil else {
+            }).sorted(by: { // Sort the posts by date
+                return $0.date > $1.date
+            }),
+            error == nil else {
                 return
             }
   

@@ -14,6 +14,11 @@ struct Post: Codable {
     var likers: [String]
     let postUrlString: String
     
+    // Create this variable to sort
+    var date: Date {
+        return DateFormatter.formatter.date(from: postedDate) ?? Date()
+    }
+    
     var storageReference: String?{
         guard let username = UserDefaults.standard.string(forKey: "username") else { return nil}
         // return the directory of the position of the post on Storage
