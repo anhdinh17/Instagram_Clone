@@ -37,33 +37,76 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
     private func fetchPosts(){
         guard let username = UserDefaults.standard.string(forKey: "username") else {return}
         
-        DatabaseManager.shared.posts(for: username) { [weak self](result) in
-            switch result {
-            case .success(let posts):
-                print("\n\n\n\n There are \(posts.count) \n\n\n \(posts)")
-                
-                let group = DispatchGroup()
-                // với mỗi post của thằng array từ FB này
-                posts.forEach { (model) in
-                    group.enter()
-                    self?.createViewModel(model: model,username: username, completion: { (success) in
-                        defer{
-                            group.leave()
-                        }
-                        if !success {
-                            print("Failed to create view model")
-                        }
-                    })
+        let userGroup = DispatchGroup()
+        userGroup.enter()
+        
+        // Create a new array to get all the posts we get back from FB
+        // this array is kind of tricky, it's a tuple array so it's easy to be used when
+        // we create Post UI ---> createViewModel()
+        var allPosts: [(post: Post, owner: String)] = []
+        
+        // Download all the following that we follow
+        DatabaseManager.shared.following(for: username) { usernames in
+            defer{
+                userGroup.leave()
+            }
+            
+            // Array của mình và những người mình follow
+            var users = usernames + [username]
+            print("Users array: \(users)")
+            
+            for current in users {
+                userGroup.enter()
+                // get the post for each user
+                DatabaseManager.shared.posts(for: current) {(result) in
+                    defer{
+                        userGroup.leave()
+                    }
+                    
+                    switch result {
+                    case .success(let posts):
+                        print("Posts count: \(current) ----- \(posts.count)")
+                        
+                        // append the post to array
+                        allPosts.append(contentsOf: posts.compactMap({
+                            (post: $0, owner: current)
+                        }))
+                        
+                    case .failure(let error):
+                        break
+                    }
                 }
-                
-                group.notify(queue: .main) {
-                    self?.collectionView?.reloadData()
-                }
-                
-            case .failure(let error):
-                print("Error in DatabaseManager.posts: \(error)")
             }
         }
+        userGroup.notify(queue: .main) {
+            // Sorting the posts
+            let sorted = allPosts.sorted(by: {
+                return $0.post.date < $1.post.date
+            })
+            
+            let group = DispatchGroup()
+            
+            // for each post, create a post UI
+            sorted.forEach { model in
+                group.enter()
+                self.createViewModel(model: model.post,
+                                     username: model.owner,
+                                     completion: { (success) in
+                                        defer{
+                                            group.leave()
+                                        }
+                                        if !success {
+                                            print("Failed to create view model")
+                                        }
+                                     })
+            }
+            
+            group.notify(queue: .main) {
+                self.collectionView?.reloadData()
+            }
+            
+        }
+        
     }
     
     private func createViewModel(model: Post,
